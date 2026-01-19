@@ -1,0 +1,12 @@
+
+services:
+  downloader:
+    build:
+      context: .
+      dockerfile: data_pipeline/Dockerfile
+    volumes:
+      # Lie le dossier data de ton Mac au dossier /app/data du conteneur
+      - ./data:/app/data
+    environment:
+      # Indique au script Python où écrire dans le conteneur
+      - DATA_PATH=/app/data
