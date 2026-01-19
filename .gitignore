@@ -1,0 +1,29 @@
+# --- Environnement virtuel ---
+.venv/
+venv/
+env/
+bin/
+lib/
+include/
+pyvenv.cfg
+
+# --- Docker ---
+.docker/
+
+# --- Secrets ---
+.env
+*.log
+
+# --- Système ---
+.DS_Store
+Thumbs.db
+
+# --- Données et Modèles ---
+data/raw/
+*.csv
+
+#shared_data/model.pkl
+#shared_data/output_predictions.csv
+
+# Optionnel : si vous voulez ignorer vos données brutes volumineuses
+# shared_data/raw_sensors.csv
