@@ -17,7 +17,7 @@ def run_download():
         return
 
     # 4. Action de téléchargement
-    print("✔️ Téléchargement en cours...")
+    print("✔️ Téléchargement en cours")
     tmp_path = kagglehub.dataset_download("afrniomelo/tep-csv")
 
     # 5. Déplacement vers la destination finale
@@ -27,7 +27,7 @@ def run_download():
     # 6. Nettoyage du cache
     if Path(tmp_path).exists():
         shutil.rmtree(tmp_path)
-        print("✔️ Cache supprimé. Espace libéré.")
+        print("✔️ Fichiers du cache supprimé")
 
     print(f"✔️ Téléchargement terminé")
 
