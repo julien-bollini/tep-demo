@@ -5,7 +5,7 @@ import kagglehub
 
 def run_download():
     # 1. Détection dynamique de la racine (tep-demo/)
-    # On part de data_pipeline/download_data.py et on remonte d'un niveau
+    # On part de data_pipeline/download_data.py et on remonte de plusieurs niveau
     base_dir = Path(__file__).resolve().parent.parent.parent
 
     # 2. Configuration du chemin (Priorité à la variable Docker, sinon local)
