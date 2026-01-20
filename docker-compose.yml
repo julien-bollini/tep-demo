@@ -1,12 +1,15 @@
-
 services:
   downloader:
     build:
-      context: .
-      dockerfile: data_pipeline/Dockerfile
+      # Senior tip: Le contexte est le dossier du service, pas la racine du projet
+      context: ./data_pipeline
+      dockerfile: Dockerfile
+    container_name: tep_pipeline
     volumes:
-      # Lie le dossier data de ton Mac au dossier /app/data du conteneur
       - ./data:/app/data
     environment:
-      # Indique au script Python où écrire dans le conteneur
-      - DATA_PATH=/app/data
+      # Chemins absolus à l'intérieur du conteneur
+      - RAW_DATA_PATH=/app/data/raw/tep-csv
+      - PROCESSED_DATA_PATH=/app/data/processed
+    tty: true
+    stdin_open: true
