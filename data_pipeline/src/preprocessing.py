@@ -17,11 +17,11 @@ def run_preprocessing():
     PROCESSED_DATA_PATH.mkdir(parents=True, exist_ok=True)
 
     # 1. Loading faulty data
-    print("✔️ Loading 'Faulty' training data...")
+    print("✔️ Loading 'Faulty' training data")
     df_faulty = load_dataset("TEP_Faulty_Training.csv")
 
     # 2. Loading normal (fault-free) data
-    print("✔️ Loading 'Normal' training data...")
+    print("✔️ Loading 'Normal' training data")
     try:
         df_normal = load_dataset("TEP_FaultFree_Training.csv")
     except FileNotFoundError:
@@ -35,7 +35,14 @@ def run_preprocessing():
 
     print(f"✔️ Consolidation complete: {df_combined.shape[0]} rows merged")
 
-    # 4. Saving the master cleaned dataset
+    # 4. Memory Optimization
+    print("✔️ Optimizing types: converting float64 to float32")
+    # Sélectionne toutes les colonnes float64
+    float64_cols = df_combined.select_dtypes(include=['float64']).columns
+    # Conversion sur place pour économiser de la RAM
+    df_combined[float64_cols] = df_combined[float64_cols].astype('float32')
+
+    # 5. Saving the master cleaned dataset
     output_file = PROCESSED_DATA_PATH / "tep_master_cleaned.csv"
     df_combined.to_csv(output_file, index=False)
 
