@@ -2,7 +2,7 @@ from src.download_data import run_download
 from src.preprocessing import run_preprocessing
 
 def start_pipeline():
-    print("\n1. Downloading data from Kaggle")
+    print("1. Downloading data from Kaggle")
     run_download()
 
     print("\n2. Data preprocessing")

@@ -17,7 +17,7 @@ def run_download():
         return
 
     # 4. Download execution
-    print("🚀 Downloading dataset from Kaggle...")
+    print("✔️ Downloading dataset from Kaggle")
     temp_download_path = kagglehub.dataset_download("afrniomelo/tep-csv")
 
     # 5. Move files to final destination

@@ -1,15 +1,50 @@
 services:
+  # 1. DATA INGESTION & PREPROCESSING
   downloader:
     build:
-      # Senior tip: Use the service directory as context to keep image builds isolated
       context: ./data_pipeline
       dockerfile: Dockerfile
     container_name: tep_pipeline
     volumes:
       - ./data:/app/data
     environment:
-      # Absolute paths inside the container for reliable data access
       - RAW_DATA_PATH=/app/data/raw/tep-csv
       - PROCESSED_DATA_PATH=/app/data/processed
-    tty: true
-    stdin_open: true
+    # This service must exit successfully before the next stage begins
+
+  # 2. MODEL TRAINING
+  trainer:
+    build:
+      context: .
+      dockerfile: training/Dockerfile
+    container_name: tep_trainer
+    volumes:
+      - ./data:/app/data
+      # Mount source loader for 'from src.data_loader import ...'
+      - ./data_pipeline:/app/data_pipeline
+    environment:
+      - PROCESSED_DATA_PATH=/app/data/processed
+      - MODEL_PATH=/app/data/models
+    # Ensures training only starts once cleaned data is available
+    depends_on:
+      downloader:
+        condition: service_completed_successfully
+
+  # 3. PERFORMANCE EVALUATION (AUDIT)
+  evaluator:
+    build:
+      context: .
+      dockerfile: training/Dockerfile
+    container_name: tep_evaluator
+    volumes:
+      - ./data:/app/data
+      - ./data_pipeline:/app/data_pipeline
+    environment:
+      - PROCESSED_DATA_PATH=/app/data/processed
+      - MODEL_PATH=/app/data/models
+    # Override default CMD to execute the audit script
+    command: python training/evaluate.py
+    # Ensures evaluation only runs after models are serialized
+    depends_on:
+      trainer:
+        condition: service_completed_successfully

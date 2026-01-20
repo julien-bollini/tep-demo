@@ -25,14 +25,14 @@ def generate_audit():
     Loads saved models and evaluates performance on the unseen test dataset.
     Generates a detailed classification report and exports it to a text file.
     """
-    print("✔️ tarting model performance audit...")
+    print("✔️ Starting model performance audit")
 
     # 1. Verification and Loading
     if not TEST_DATA_FILE.exists():
         print(f"❌ Error: Test set not found at {TEST_DATA_FILE}. Please run train.py first.")
         return
 
-    print("✔️ Loading models and test data...")
+    print("✔️ Loading models and test data")
     try:
         detector = joblib.load(MODEL_DIR / "tep_detector.pkl")
         diagnostician = joblib.load(MODEL_DIR / "tep_diagnostician.pkl")
@@ -43,7 +43,7 @@ def generate_audit():
     df_test = pd.read_csv(TEST_DATA_FILE)
 
     # 2. Inference Logic (Cascaded Architecture)
-    print("✔️ Running inference on test set...")
+    print("✔️ Running inference on test set")
     X_test, y_true = split_X_y(df_test, drop_metadata=True)
 
     # Step 1: Detect if a fault is present
