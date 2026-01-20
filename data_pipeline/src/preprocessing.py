@@ -1,10 +1,12 @@
 import pandas as pd
 import os
 from pathlib import Path
-from data_loader import load_dataset
+from src.data_loader import load_dataset
 
+# Calcul de secours (fallback)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-PROCESSED_DATA_PATH = PROJECT_ROOT / "data" / "processed"
+# PRIORITÉ à la variable d'environnement injectée par Docker
+PROCESSED_DATA_PATH = Path(os.getenv("PROCESSED_DATA_PATH", PROJECT_ROOT / "data" / "processed"))
 
 def run_preprocessing():
     """

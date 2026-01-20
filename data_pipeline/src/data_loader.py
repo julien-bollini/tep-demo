@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-RAW_DATA_PATH = os.getenv("DATA_PATH", PROJECT_ROOT / "data" / "raw" / "tep-csv")
+RAW_DATA_PATH = Path(os.getenv("RAW_DATA_PATH", "/app/data/raw/tep-csv"))
 
 def optimize_memory(df):
     # Optimise la consommation mémoire du DataFrame en convertissant les types de données.
