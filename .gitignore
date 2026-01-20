@@ -27,3 +27,4 @@ data/raw/
 data/processed/
 data/models/*.pkl
 data/models/*.csv
+data/models/*.txt
