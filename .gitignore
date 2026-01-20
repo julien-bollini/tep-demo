@@ -18,10 +18,12 @@ __pycache__/
 .env
 *.log
 
-# --- Système ---
+# --- System ---
 .DS_Store
 Thumbs.db
 
-# --- Données et Modèles ---
+# Data and Models
 data/raw/
-*.csv
+data/processed/
+data/models/*.pkl
+data/models/*.csv
