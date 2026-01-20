@@ -1,22 +1,23 @@
-# [cite_start]Utilisation d'une image Python légère [cite: 2]
+# Use a lightweight Python base image to reduce container size
 FROM python:3.11-slim
 
+# Set the working directory inside the container
 WORKDIR /app
 
-# [cite_start]Installation des dépendances système [cite: 2]
+# Install essential system dependencies and clean up apt cache to save space
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# [cite_start]Copie et installation des dépendances [cite: 2]
+# Copy only requirements first to leverage Docker layer caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# [cite_start]Copie tout le contenu du dossier data_pipeline/ vers /app [cite: 2]
+# Copy the rest of the application code
 COPY . .
 
-# [cite_start]Configuration pour que Python trouve les scripts dans src/ [cite: 2]
+# Set PYTHONPATH so Python can locate modules in the /app directory
 ENV PYTHONPATH=/app
 
-# [cite_start]Point d'entrée à la racine du service [cite: 2]
+# Default command to run the pipeline
 CMD ["python", "run_pipeline.py"]

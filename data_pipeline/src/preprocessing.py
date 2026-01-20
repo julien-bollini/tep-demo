@@ -3,40 +3,43 @@ import os
 from pathlib import Path
 from src.data_loader import load_dataset
 
-# Calcul de secours (fallback)
+# Fallback path calculation relative to project structure
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-# PRIORITÉ à la variable d'environnement injectée par Docker
+
+# PRIORITY: Use Docker-injected environment variable, otherwise use local fallback
 PROCESSED_DATA_PATH = Path(os.getenv("PROCESSED_DATA_PATH", PROJECT_ROOT / "data" / "processed"))
 
 def run_preprocessing():
     """
-    Fusionne Normal + Faulty, optimise les types et sauvegarde un CSV propre.
-    Le scaling est délégué au script d'entraînement.
+    Merges Normal + Faulty datasets, optimizes types, and saves a consolidated clean CSV.
+    Note: Scaling is delegated to the training pipeline to prevent data leakage.
     """
     PROCESSED_DATA_PATH.mkdir(parents=True, exist_ok=True)
 
-    # 1. Chargement des données en panne
-    print("✔️ Chargement des données 'Faulty'")
+    # 1. Loading faulty data
+    print("✔️ Loading 'Faulty' training data...")
     df_faulty = load_dataset("TEP_Faulty_Training.csv")
 
-    # 2. Chargement des données normales
-    print("✔️ Chargement des données 'Normal'")
+    # 2. Loading normal (fault-free) data
+    print("✔️ Loading 'Normal' training data...")
     try:
         df_normal = load_dataset("TEP_FaultFree_Training.csv")
     except FileNotFoundError:
+        # Fallback for alternative naming conventions
         df_normal = load_dataset("TEP_Normal_Training.csv")
 
-    # 3. Étiquetage et Fusion
-    df_normal['faultNumber'] = 0 # Label pour le cas sain
+    # 3. Labeling and Consolidation
+    # Assign label 0 for normal operation
+    df_normal['faultNumber'] = 0
     df_combined = pd.concat([df_normal, df_faulty], axis=0, ignore_index=True)
 
-    print(f"✔️ Fusion terminée : {df_combined.shape[0]} lignes")
+    print(f"✔️ Consolidation complete: {df_combined.shape[0]} rows merged")
 
-    # 4. Sauvegarde du fichier consolidé
+    # 4. Saving the master cleaned dataset
     output_file = PROCESSED_DATA_PATH / "tep_master_cleaned.csv"
     df_combined.to_csv(output_file, index=False)
 
-    print(f"✔️ Fichier d'entraînement sauvegardé")
+    print(f"✔️ Master training file saved to: {output_file}")
     return output_file
 
 if __name__ == "__main__":

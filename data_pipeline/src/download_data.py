@@ -4,32 +4,32 @@ from pathlib import Path
 import kagglehub
 
 def run_download():
-    # 1. Détection dynamique de la racine (tep-demo/)
-    # On part de data_pipeline/download_data.py et on remonte de plusieurs niveau
+    # 1. Dynamic root detection (tep-demo/)
+    # Resolves the path relative to data_pipeline/download_data.py
     base_dir = Path(__file__).resolve().parent.parent.parent
 
-    # 2. Configuration du chemin (Priorité à la variable Docker, sinon local)
-    data_raw_path = Path(os.getenv("DATA_PATH", base_dir / "data")) / "raw" / "tep-csv"
+    # 2. Path configuration (Docker environment variable priority, then local fallback)
+    raw_data_path = Path(os.getenv("DATA_PATH", base_dir / "data")) / "raw" / "tep-csv"
 
-    # 3. Vérification de présence
-    if data_raw_path.exists():
-        print(f"✔️ Données déjà présentes")
+    # 3. Check if data already exists
+    if raw_data_path.exists():
+        print(f"✔️ Data already exists in {raw_data_path}")
         return
 
-    # 4. Action de téléchargement
-    print("✔️ Téléchargement en cours")
-    tmp_path = kagglehub.dataset_download("afrniomelo/tep-csv")
+    # 4. Download execution
+    print("🚀 Downloading dataset from Kaggle...")
+    temp_download_path = kagglehub.dataset_download("afrniomelo/tep-csv")
 
-    # 5. Déplacement vers la destination finale
-    data_raw_path.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(tmp_path, data_raw_path, dirs_exist_ok=True)
+    # 5. Move files to final destination
+    raw_data_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(temp_download_path, raw_data_path, dirs_exist_ok=True)
 
-    # 6. Nettoyage du cache
-    if Path(tmp_path).exists():
-        shutil.rmtree(tmp_path)
-        print("✔️ Fichiers du cache supprimé")
+    # 6. Cache cleanup
+    if Path(temp_download_path).exists():
+        shutil.rmtree(temp_download_path)
+        print("✔️ Temporary cache cleared")
 
-    print(f"✔️ Téléchargement terminé")
+    print(f"✔️ Download completed successfully")
 
 if __name__ == "__main__":
     run_download()
