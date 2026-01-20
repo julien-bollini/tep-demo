@@ -57,16 +57,31 @@ def run_training():
     if not CLEANED_DATA_FILE.exists():
         print(f"❌ Error: {CLEANED_DATA_FILE} not found.")
         return
+    # Force float32 during read to keep memory footprint low
+    print(f"✔️ Loading datasets")
+    df = pd.read_csv(
+        CLEANED_DATA_FILE,
+        engine='c',
+        low_memory=True
+    )
 
-    print(f"✔️ Loading datasets...")
-    df = pd.read_csv(CLEANED_DATA_FILE)
+    # Ensure all float columns are float32
+    float_cols = df.select_dtypes(include=['float']).columns
+    df[float_cols] = df[float_cols].astype('float32')
+
+    # Apply downsampling
     df_train, df_test = prepare_datasets(df)
 
-    # 1. Export test set for the evaluation script (MLOps Best Practice)
+    # Clean up original df from memory to free space
+    del df
+
+    print(f"✔️ Training data ready. Shape: {df_train.shape}")
+
+    # 1. Export test set for the evaluation script
     df_test.to_csv(PROCESSED_DATA_DIR / "test_set.csv", index=False)
 
     # 2. Binary Detector Training (Normal vs. Faulty)
-    print("✔️ Training Fault Detector...")
+    print("✔️ Training Fault Detector")
     X_train, _ = split_X_y(df_train, drop_metadata=True)
     y_train_binary = (df_train['faultNumber'] > 0).astype(int)
 
@@ -78,7 +93,7 @@ def run_training():
     joblib.dump(detector, MODEL_DIR / "tep_detector.pkl")
 
     # 3. Multi-class Diagnostician Training (Fault Identification)
-    print("✔️ Training Fault Diagnostician...")
+    print("✔️ Training Fault Diagnostician")
     df_faulty = df_train[df_train['faultNumber'] > 0]
     X_diag, y_diag = split_X_y(df_faulty, drop_metadata=True)
 
@@ -89,7 +104,7 @@ def run_training():
     diagnostician.fit(X_diag, y_diag)
     joblib.dump(diagnostician, MODEL_DIR / "tep_diagnostician.pkl")
 
-    print(f"✔️ Training complete. Models and test_set.csv are ready.")
+    print(f"✔️ Training complete. Models and test_set.csv are ready")
 
 if __name__ == "__main__":
     run_training()
