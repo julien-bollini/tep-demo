@@ -26,7 +26,7 @@ CLEANED_DATA_FILE = PROCESSED_DATA_DIR / "tep_master_cleaned.csv"
 # ==========================================
 # SPLIT UTILITIES
 # ==========================================
-def prepare_datasets(df, retention_rate=0.5, test_size=0.2):
+def prepare_datasets(df, retention_rate=0.02, test_size=0.2):
     """
     Downsamples the data and performs a run-aware split to prevent data leakage.
     """
