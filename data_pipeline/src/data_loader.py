@@ -40,7 +40,7 @@ for i in range(1, 12): OPTIMIZED_DTYPES[f'xmv_{i}'] = 'float32'
 # HYBRID LOADING STRATEGY WITH MEMORY MONITORING
 # ==============================================================================
 
-def load_dataset(file_name, retention_rate=0.5, random_state=42):
+def load_dataset(file_name, retention_rate=0.02, random_state=42):
     """
     Hybrid loader with memory gain reporting.
     - < 8GB RAM: Use chunked method (Safe).
