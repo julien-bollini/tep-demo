@@ -104,7 +104,7 @@ def _load_direct(path, retention_rate, random_state):
     df = pd.read_csv(path, dtype=OPTIMIZED_DTYPES, engine='c')
 
     if retention_rate < 1.0:
-        df['unique_id'] = df['faultNumber'] * 1000 + df['simulationRun']
+        df['unique_id'] = df['faultNumber'].astype('int32') * 1000 + df['simulationRun'].astype('int32')
         unique_ids = df['unique_id'].unique()
         np.random.seed(random_state)
         selected_ids = np.random.choice(unique_ids, size=int(len(unique_ids) * retention_rate), replace=False)
