@@ -11,14 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install dependencies for testing
+      - name: Install dependencies
         run: |
-          pip install pytest pandas numpy psutil
+          pip install pytest pandas numpy scikit-learn psutil
 
       - name: Run Unit Tests
         run: |
+          # Cette ligne est la clé du succès local que tu viens d'avoir
           export PYTHONPATH=$PYTHONPATH:$(pwd)
-          pytest tests/
+          pytest tests/ -v
 
       - name: Checkout Code
         uses: actions/checkout@v4
