@@ -1,71 +1,65 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from src.config import PARQUET_DATA_PATH, PROCESSED_DATA_PATH
-
+from src.config import (
+    PARQUET_DATA_PATH,
+    PROCESSED_DATA_PATH,
+    DEFAULT_N_SIMULATIONS,
+    MERGED_FILE_PATH,
+    N_SIMU_FILE_PATH
+)
 
 class DataLoader:
     """Charge et prépare les données pour l'entraînement"""
 
-    METADATA_COLUMNS = ['faultNumber', 'simulationRun', 'sample']
-    TARGET_COLUMN = 'faultNumber'
-
     def __init__(self, data_path=None):
         self.data_path = Path(data_path) if data_path else PARQUET_DATA_PATH
 
-    def load_parquet(self, filename=None):
-        """Charge un ou tous les fichiers Parquet"""
-        if filename:
-            files = [self.data_path / filename]
-        else:
-            files = list(self.data_path.glob("*.parquet"))
+    def load_data(self, file_path=MERGED_FILE_PATH, n_simulations=DEFAULT_N_SIMULATIONS):
+        """
+        Charge les données et applique un sous-échantillonnage si demandé.
+        """
+        # Utilise le chemin passé en argument ou celui par défaut
+        path = Path(file_path) if file_path else self.data_path
 
-        if not files:
-            raise FileNotFoundError(f"No parquet files found in {self.data_path}")
+        if path is None or not path.exists():
+            raise FileNotFoundError(f"❌ Chemin invalide : {path}")
 
-        dfs = [pd.read_parquet(f) for f in files]
-        df = pd.concat(dfs, ignore_index=True)
+        print(f"📖 Chargement de : {path.name}...")
+        df = pd.read_parquet(path)
 
-        print(f"✔️ Loaded {len(files)} file(s) - Shape: {df.shape}")
-        return df
+        # Si n_simulations est précisé, on réduit le dataset
+        if n_simulations is not None:
+            df = self._subsample_by_run(df, n_simulations)
 
-    def split_X_y(self, df, drop_metadata=True):
-        """Sépare features (X) et target (y)"""
-        y = df[self.TARGET_COLUMN]
-        to_drop = self.METADATA_COLUMNS if drop_metadata else [self.TARGET_COLUMN]
-        X = df.drop(columns=[c for c in to_drop if c in df.columns])
+        # Save the final merged file
+        df.to_parquet(N_SIMU_FILE_PATH, engine="pyarrow", index=False)
+        print(f"✅ Merging completed and saved to: {N_SIMU_FILE_PATH.name}")
+
+        # Séparation classique X (features) et y (target)
+        # On exclut les colonnes de métadonnées pour l'entraînement
+        metadata_cols = ['faultNumber', 'simulationRun', 'sample']
+        X = df.drop(columns=metadata_cols)
+        y = df['faultNumber']
+
         return X, y
 
-    def train_test_split(self, df, retention_rate=0.02, test_size=0.2):
+    def _subsample_by_run(self, df, n_simulations=DEFAULT_N_SIMULATIONS):
         """
-        Split train/test en évitant le data leakage (run-aware split)
-
-        Args:
-            df: DataFrame source
-            retention_rate: % de runs à conserver (downsampling)
-            test_size: % pour le test set
-
-        Returns:
-            tuple: (df_train, df_test)
+        Logique interne pour filtrer par simulationRun.
         """
-        # ID unique par simulation run
-        df['run_id'] = df['faultNumber'].astype(str) + "_" + df['simulationRun'].astype(str)
-        unique_runs = df['run_id'].unique()
+        print(f"📉 Réduction à {n_simulations} simulations par type de défaut...")
 
-        # Downsampling
-        n_keep = int(len(unique_runs) * retention_rate)
-        kept_runs = np.random.choice(unique_runs, n_keep, replace=False)
-        df = df[df['run_id'].isin(kept_runs)]
-
-        # Split run-aware
-        split_idx = int(len(kept_runs) * (1 - test_size))
-        train_runs = kept_runs[:split_idx]
-
-        df_train = df[df['run_id'].isin(train_runs)].drop(columns=['run_id'])
-        df_test = df[~df['run_id'].isin(train_runs)].drop(columns=['run_id'])
-
-        print(f"✔️ Train shape: {df_train.shape} | Test shape: {df_test.shape}")
-        return df_train, df_test
+        # Ajout de include_groups=False pour éviter le Warning
+        return (
+            df.groupby('faultNumber')
+            .apply(
+                lambda x: x[x['simulationRun'].isin(x['simulationRun'].unique()[:n_simulations])],
+                include_groups=False
+            )
+            .reset_index(level=0) # On remet 'faultNumber' qui a été déplacé dans l'index
+            .reset_index(drop=True)
+        )
 
     def save_test_set(self, df_test):
         """Sauvegarde le test set pour évaluation ultérieure"""

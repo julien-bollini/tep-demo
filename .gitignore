@@ -30,3 +30,6 @@ data/processed/
 data/models/*.pkl
 data/models/*.csv
 data/models/*.txt
+
+# Data and Models
+backup/

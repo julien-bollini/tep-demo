@@ -1,5 +1,6 @@
 import pandas as pd
 from pathlib import Path
+from src.training.loader import DataLoader
 from src.config import (
     RAW_DATA_PATH,
     PARQUET_DATA_PATH,
@@ -7,11 +8,16 @@ from src.config import (
     FAULTY_PARQUET_PATH,
     NORMAL_PARQUET_PATH,
     RAW_CSV_FILES,
+    MERGED_FILE_PATH
 )
 
 
 class DataProcessor:
     """Handles the data processing steps of the pipeline."""
+
+    def __init__(self):
+            # On crée une instance du DataLoader pour pouvoir utiliser ses méthodes
+            self.loader = DataLoader()
 
     def convert_csv_to_parquet(self):
         """Converts missing CSV files to Parquet with optimized data types.
@@ -56,19 +62,6 @@ class DataProcessor:
         else:
             print(f"🏁 Conversion completed: {converted_count} new file(s) created.")
 
-
-    def load_dataset(self, file_path):
-        """Loads a Parquet file and returns it as a DataFrame.
-
-        Args:
-            file_path (Path): The path to the Parquet file to load.
-
-        Returns:
-            DataFrame: The loaded DataFrame.
-        """
-        return pd.read_parquet(file_path)
-
-
     def merge_faulty_and_normal_data(self):
         """
         Merges the 'Faulty' and 'Normal' Parquet files only if the merged file
@@ -77,17 +70,15 @@ class DataProcessor:
         Returns:
             DataFrame: The merged DataFrame.
         """
-        merged_file_path = PARQUET_DATA_PATH / "faulty_and_normal_merged.parquet"
-
         # Step 1: Check if the merged file already exists
-        if merged_file_path.exists():
-            print(f"✅ The merged file already exists: {merged_file_path.name}")
+        if MERGED_FILE_PATH.exists():
+            print(f"✅ The merged file already exists: {MERGED_FILE_PATH.name}")
             # Optionally, load and return the existing file if needed
-            return pd.read_parquet(merged_file_path)
+            return pd.read_parquet(MERGED_FILE_PATH)
 
         # Step 2: Load and check the source files
-        faulty_df = self.load_dataset(FAULTY_PARQUET_PATH)
-        normal_df = self.load_dataset(NORMAL_PARQUET_PATH)
+        faulty_df = self.loader.load_dataset(FAULTY_PARQUET_PATH)
+        normal_df = self.loader.load_dataset(NORMAL_PARQUET_PATH)
 
         if normal_df.empty and faulty_df.empty:
             print("❌ Error: No source data to merge.")
@@ -101,7 +92,7 @@ class DataProcessor:
         merged_df = pd.concat([normal_df, faulty_df], axis=0, ignore_index=True)
 
         # Save the final merged file
-        merged_df.to_parquet(merged_file_path, engine="pyarrow", index=False)
-        print(f"✅ Merging completed and saved to: {merged_file_path.name}")
+        merged_df.to_parquet(MERGED_FILE_PATH, engine="pyarrow", index=False)
+        print(f"✅ Merging completed and saved to: {MERGED_FILE_PATH.name}")
 
         return merged_df
