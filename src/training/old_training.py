@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from pathlib import Path
-from src.data_loader import load_dataset
+from src.old_data_loader import load_dataset
 
 # Fallback path calculation relative to project structure
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -34,13 +34,6 @@ def run_preprocessing():
     df_combined = pd.concat([df_normal, df_faulty], axis=0, ignore_index=True)
 
     print(f"✔️ Consolidation complete: {df_combined.shape[0]} rows merged")
-
-    # 4. Memory Optimization
-    print("✔️ Optimizing types: converting float64 to float32")
-    # Sélectionne toutes les colonnes float64
-    float64_cols = df_combined.select_dtypes(include=['float64']).columns
-    # Conversion sur place pour économiser de la RAM
-    df_combined[float64_cols] = df_combined[float64_cols].astype('float32')
 
     # 5. Saving the master cleaned dataset
     output_file = PROCESSED_DATA_PATH / "tep_master_cleaned.csv"

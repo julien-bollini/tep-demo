@@ -1,4 +1,0 @@
-kagglehub>=0.4.0
-pandas>=2.3.3
-numpy>=1.26.4
-psutil>=5.9.0

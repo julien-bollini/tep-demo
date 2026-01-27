@@ -16,7 +16,7 @@ root_path = current_dir.parent
 # Adding data_pipeline to sys.path to allow imports from src
 sys.path.append(str(root_path / "data_pipeline"))
 
-from src.data_loader import split_X_y
+from src.old_data_loader import split_X_y
 
 # Environment variables for Docker compatibility with local fallbacks
 PROCESSED_DATA_DIR = Path(os.getenv("PROCESSED_DATA_PATH", root_path / "data" / "processed"))
@@ -59,21 +59,9 @@ def run_training():
         return
     # Force float32 during read to keep memory footprint low
     print(f"✔️ Loading datasets")
-    df = pd.read_csv(
-        CLEANED_DATA_FILE,
-        engine='c',
-        low_memory=True
-    )
-
-    # Ensure all float columns are float32
-    float_cols = df.select_dtypes(include=['float']).columns
-    df[float_cols] = df[float_cols].astype('float32')
 
     # Apply downsampling
     df_train, df_test = prepare_datasets(df)
-
-    # Clean up original df from memory to free space
-    del df
 
     print(f"✔️ Training data ready. Shape: {df_train.shape}")
 
