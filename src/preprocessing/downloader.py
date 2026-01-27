@@ -1,7 +1,6 @@
 import shutil
 import kagglehub
 import yaml
-#from pathlib import Path
 from src.config import (
     RAW_DATA_PATH,
     CACHE_CONFIG_PATH,
@@ -9,18 +8,30 @@ from src.config import (
 
 
 class DataDownloader:
-    """Télécharge les données depuis Kaggle"""
+    """Downloads data from Kaggle"""
 
     def __init__(self, dataset_name="afrniomelo/tep-csv"):
+        """Initializes the DataDownloader with a dataset name.
+
+        Args:
+            dataset_name (str): The Kaggle dataset name to download.
+        """
         self.dataset_name = dataset_name
 
     def download(self):
-        """Télécharge le dataset et sauvegarde le cache"""
+        """Downloads the dataset and saves the cache.
+
+        Returns:
+            str: Path to the downloaded data.
+
+        Raises:
+            Exception: If the dataset already exists.
+        """
         if RAW_DATA_PATH.exists():
-            print(f"✔️ Data already exists in {RAW_DATA_PATH}")
+            print("✅ Data already exists")
             return str(RAW_DATA_PATH)
 
-        print("✔️ Downloading dataset from Kaggle")
+        print("✅ Downloading dataset from Kaggle")
         temp_download_path = kagglehub.dataset_download(self.dataset_name)
         print(f"Temporary download path: {temp_download_path}")
 
@@ -29,18 +40,22 @@ class DataDownloader:
 
         self._save_cache_info(temp_download_path)
 
-        print("✔️ Download completed successfully")
+        print("✅ Download completed successfully")
         return str(RAW_DATA_PATH)
 
     def _save_cache_info(self, cache_path):
-        """Sauvegarde l'emplacement du cache"""
+        """Saves the cache location.
+
+        Args:
+            cache_path (str): Path to the cached dataset.
+        """
         cache_info = {
             "kaggle_cache_path": str(cache_path),
-            "data_path": str(RAW_DATA_PATH)
+            "data_path": str(RAW_DATA_PATH),
         }
 
         CACHE_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
         with open(CACHE_CONFIG_PATH, "w") as f:
             yaml.dump(cache_info, f, default_flow_style=False)
 
-        print(f"✔️ Cache info saved to {CACHE_CONFIG_PATH}")
+        print(f"✅ Cache info saved to {CACHE_CONFIG_PATH}")
