@@ -91,7 +91,7 @@ The system features a complete MLOps pipeline from data ingestion to deployment,
 ```
 tep-demo/
 ├── src/
-│   ├── api/                    # FastAPI inference service
+│   ├── api/                   # FastAPI inference service
 │   │   ├── main.py            # API endpoints & model loading
 │   │   └── schemas.py         # Pydantic data validation
 │   ├── dashboard/
@@ -105,11 +105,11 @@ tep-demo/
 │   ├── evaluation/
 │   │   └── evaluator.py       # Performance metrics
 │   └── config.py              # Global configuration
-├── models/                     # Serialized ML artifacts
+├── models/                    # Serialized ML artifacts
 │   ├── detector_pipeline.joblib
 │   ├── diagnostician_pipeline.joblib
 │   └── metrics.json
-├── data/                       # Data storage (Bronze/Silver/Gold)
+├── data/                      # Data storage (Bronze/Silver/Gold)
 │   ├── raw/                   # Original CSV files
 │   ├── processed/             # Parquet files
 │   └── final_split/           # Test set archive
@@ -130,11 +130,228 @@ tep-demo/
 - Docker & Docker Compose (for containerized deployment)
 - Make (optional, for automation)
 
+### Platform-Specific Installation Guides
+
+<details>
+<summary><b>🐧 Fedora / RHEL / CentOS</b></summary>
+
+#### 1. System Updates
+```bash
+# Update system packages
+sudo dnf update -y
+```
+
+#### 2. Python 3.11+
+```bash
+# Install Python 3.11
+sudo dnf install python3.11 python3.11-pip python3.11-devel -y
+
+# Verify installation
+python3.11 --version
+```
+
+#### 3. Development Tools
+```bash
+# Install essential build tools
+sudo dnf groupinstall "Development Tools" -y
+
+# Install additional dependencies
+sudo dnf install gcc gcc-c++ make git -y
+```
+
+#### 4. Docker & Docker Compose
+```bash
+# Add Docker repository
+sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+
+# Install Docker
+sudo dnf install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
+
+# Start and enable Docker service
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Add user to docker group (avoid using sudo)
+sudo usermod -aG docker $USER
+
+# Log out and back in, then verify
+docker --version
+docker compose version
+```
+
+#### 5. Make (Optional but Recommended)
+```bash
+# Usually pre-installed, but if not:
+sudo dnf install make -y
+```
+
+</details>
+
+<details>
+<summary><b>🐧 Ubuntu / Debian</b></summary>
+
+#### 1. System Updates
+```bash
+# Update package lists and upgrade packages
+sudo apt update && sudo apt upgrade -y
+```
+
+#### 2. Python 3.11+
+```bash
+# Add deadsnakes PPA for latest Python versions
+sudo apt install software-properties-common -y
+sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt update
+
+# Install Python 3.11
+sudo apt install python3.11 python3.11-venv python3.11-dev -y
+
+# Install pip
+sudo apt install python3-pip -y
+
+# Verify installation
+python3.11 --version
+```
+
+#### 3. Development Tools
+```bash
+# Install build essentials
+sudo apt install build-essential git curl wget -y
+```
+
+#### 4. Docker & Docker Compose
+```bash
+# Install prerequisites
+sudo apt install ca-certificates curl gnupg lsb-release -y
+
+# Add Docker's official GPG key
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# Set up Docker repository
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Install Docker Engine
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
+
+# Start and enable Docker service
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Add user to docker group
+sudo usermod -aG docker $USER
+
+# Log out and back in, then verify
+docker --version
+docker compose version
+```
+
+#### 5. Make (Optional but Recommended)
+```bash
+# Usually pre-installed, but if not:
+sudo apt install make -y
+```
+
+</details>
+
+<details>
+<summary><b>🍎 macOS</b></summary>
+
+#### 1. Homebrew Package Manager
+```bash
+# Install Homebrew (if not already installed)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Update Homebrew
+brew update
+```
+
+#### 2. Python 3.11+
+```bash
+# Install Python 3.11
+brew install python@3.11
+
+# Add to PATH (add to ~/.zshrc or ~/.bash_profile)
+echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+# Verify installation
+python3.11 --version
+```
+
+#### 3. Development Tools
+```bash
+# Install Xcode Command Line Tools
+xcode-select --install
+
+# Install Git (if not already installed)
+brew install git
+```
+
+#### 4. Docker Desktop
+```bash
+# Install Docker Desktop via Homebrew
+brew install --cask docker
+
+# Or download manually from:
+# https://www.docker.com/products/docker-desktop/
+
+# Start Docker Desktop from Applications
+# Verify installation
+docker --version
+docker compose version
+```
+
+#### 5. Make
+```bash
+# Usually pre-installed with Xcode CLI tools
+# Verify
+make --version
+```
+
+#### 6. Optional: Audio Notifications
+```bash
+# macOS has built-in 'say' command for audio feedback
+# No additional installation needed
+# Test: say "Hello from Terminal"
+```
+
+</details>
+
+<details>
+<summary><b>🪟 Windows</b></summary>
+
+#### Windows Subsystem for Linux (WSL2) - Recommended Approach
+
+**Step 1: Enable WSL**
+```powershell
+# Run PowerShell as Administrator
+wsl --install
+
+# Restart your computer
+```
+
+**Step 2: Install Ubuntu on WSL**
+```powershell
+# Install Ubuntu 22.04 LTS
+wsl --install -d Ubuntu-22.04
+
+# Launch Ubuntu and create user account
+```
+
+**Step 3: Follow Ubuntu instructions above**
+- Once inside WSL, follow the Ubuntu/Debian installation steps
+- All commands will work natively in WSL environment
+
+
 ### Installation & Setup
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/jubenkai73/tep-demo
 cd tep-demo
 
 # Create virtual environment and install dependencies
@@ -388,11 +605,11 @@ pytest tests/test_predictions.py
 ## 🔐 Best Practices Implemented
 
 ### MLOps
-✅ Reproducible experiments (fixed random seed)
-✅ Artifact versioning (joblib persistence)
-✅ Data lineage tracking (cache metadata)
-✅ Pipeline automation (Makefile + CLI)
-✅ Idempotent operations (skip existing artifacts)
+✅ Reproducible experiments (fixed random seed).
+✅ Artifact versioning (joblib persistence).
+✅ Data lineage tracking (cache metadata).
+✅ Pipeline automation (Makefile + CLI).
+✅ Idempotent operations (skip existing artifacts).
 
 ### Software Engineering
 ✅ Type hints throughout codebase
@@ -490,14 +707,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 📞 Contact
+## 🛠️ Contribution & Bugs
 
-For questions, issues, or suggestions:
+Si vous trouvez un bug ou si vous avez une demande de fonctionnalité, merci d'ouvrir une **[Issue](https://github.com/jubenkai73/tep-demo/issues)**.
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/tep-demo/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/tep-demo/discussions)
-- 📧 **Email**: your.email@example.com
-
+Pour les questions générales et l'entraide, rendez-vous plutôt dans l'onglet **[Discussions](https://github.com/jubenkai73/tep-demo/discussions)** !
 ---
 
 ## 🌟 Star History
