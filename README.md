@@ -6,45 +6,45 @@
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A production-ready **Machine Learning system** for real-time fault detection and diagnosis in the Tennessee Eastman Process (TEP) - a benchmark chemical reactor simulation used in process control research.
+A production-ready **Machine Learning system** for real-time fault detection and diagnosis in the Tennessee Eastman Process (TEP) - a benchmark chemical reactor simulation used in process control research.
 
 ## 🎯 Overview
 
-This project implements a **cascaded two-stage ML architecture** that:
+This project implements a **cascaded two-stage ML architecture** that:
 
-1. **Detects** anomalies in reactor operation (Binary Classification)
-2. **Diagnoses** the specific fault type among 20 possible faults (Multi-class Classification)
+1. **Detects** anomalies in reactor operation (Binary Classification)
+2. **Diagnoses** the specific fault type among 20 possible faults (Multi-class Classification)
 
 The system features a complete MLOps pipeline from data ingestion to deployment, with:
-- 🚀 **FastAPI REST API** for real-time inference
-- 📊 **Interactive Streamlit Dashboard** for monitoring
-- 🐳 **Docker containerization** for easy deployment
-- ⚙️ **Automated pipeline** with Makefile orchestration
+- 🚀 **FastAPI REST API** for real-time inference
+- 📊 **Interactive Streamlit Dashboard** for monitoring
+- 🐳 **Docker containerization** for easy deployment
+- ⚙️ **Automated pipeline** with Makefile orchestration
 
 ---
 
 ## ✨ Key Features
 
 ### Machine Learning
-- **Two-stage cascaded Random Forest models** (Detector → Diagnostician)
-- **52 process variables** (41 measured + 11 manipulated sensors)
-- **20 fault types** classification with high accuracy
-- **Leakage-proof splitting** strategy (group-wise by simulation run)
-- **Class imbalance handling** with balanced weights
+- **Two-stage cascaded Random Forest models** (Detector → Diagnostician)
+- **52 process variables** (41 measured + 11 manipulated sensors)
+- **20 fault types** classification with high accuracy
+- **Leakage-proof splitting** strategy (group-wise by simulation run)
+- **Class imbalance handling** with balanced weights
 
 ### MLOps Pipeline
-- **Medallion Architecture** (Bronze → Silver → Gold data layers)
-- **Automated ETL** with Kaggle dataset integration
-- **Model versioning** and artifact persistence
-- **Idempotent operations** for reproducibility
-- **Performance metrics** tracking and reporting
+- **Medallion Architecture** (Bronze → Silver → Gold data layers)
+- **Automated ETL** with Kaggle dataset integration
+- **Model versioning** and artifact persistence
+- **Idempotent operations** for reproducibility
+- **Performance metrics** tracking and reporting
 
 ### Deployment
-- **RESTful API** with health checks and error handling
-- **Real-time streaming simulation** on dashboard
-- **Reactor synoptic visualization** with LED indicators
-- **Event detection** with configurable persistence thresholds
-- **Docker Compose** multi-service orchestration
+- **RESTful API** with health checks and error handling
+- **Real-time streaming simulation** on dashboard
+- **Reactor synoptic visualization** with LED indicators
+- **Event detection** with configurable persistence thresholds
+- **Docker Compose** multi-service orchestration
 
 ---
 
@@ -55,15 +55,15 @@ The system features a complete MLOps pipeline from data ingestion to deployment,
 │         ML Pipeline (main.py)               │
 │   Preprocess → Train → Evaluate             │
 └─────────────────┬───────────────────────────┘
-                  │
-                  ↓
-         ┌────────────────┐
-         │ Trained Models │
-         │   (.joblib)    │
-         └────────┬───────┘
-                  │
-        ┌─────────┴──────────┐
-        ↓                    ↓
+│
+↓
+┌────────────────┐
+│ Trained Models │
+│   (.joblib)    │
+└────────┬───────┘
+│
+┌─────────┴──────────┐
+↓                    ↓
 ┌──────────────┐    ┌─────────────────┐
 │  FastAPI     │    │  Streamlit      │
 │  API Server  │←──→│  Dashboard      │
@@ -74,15 +74,15 @@ The system features a complete MLOps pipeline from data ingestion to deployment,
 ### Two-Stage Model Architecture
 
 **Stage 1: Detector (Binary Anomaly Detection)**
-- Random Forest (50 estimators, max_depth=10)
-- Classifies: Normal (0) vs Faulty (1)
-- High sensitivity to catch all anomalies
+- Random Forest (50 estimators, max_depth=10)
+- Classifies: Normal (0) vs Faulty (1)
+- High sensitivity to catch all anomalies
 
 **Stage 2: Diagnostician (Multi-class Fault Classification)**
-- Random Forest (100 estimators, max_depth=20)
-- Classifies: Fault 1-20
-- Only triggered when anomaly detected
-- Trained exclusively on faulty data
+- Random Forest (100 estimators, max_depth=20)
+- Classifies: Fault 1-20
+- Only triggered when anomaly detected
+- Trained exclusively on faulty data
 
 ---
 
@@ -126,9 +126,9 @@ tep-demo/
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.11+
-- Docker & Docker Compose (for containerized deployment)
-- Make (optional, for automation)
+- Python 3.11+
+- Docker & Docker Compose (for containerized deployment)
+- Make (optional, for automation)
 
 ### Platform-Specific Installation Guides
 
@@ -193,7 +193,7 @@ sudo dnf install make -y
 #### 1. System Updates
 ```bash
 # Update package lists and upgrade packages
-sudo apt update && sudo apt upgrade -y
+sudo apt update && sudo apt upgrade -y
 ```
 
 #### 2. Python 3.11+
@@ -226,12 +226,12 @@ sudo apt install ca-certificates curl gnupg lsb-release -y
 
 # Add Docker's official GPG key
 sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
 # Set up Docker repository
 echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # Install Docker Engine
 sudo apt update
@@ -263,7 +263,7 @@ sudo apt install make -y
 #### 1. Homebrew Package Manager
 ```bash
 # Install Homebrew (if not already installed)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # Update Homebrew
 brew update
@@ -275,7 +275,7 @@ brew update
 brew install python@3.11
 
 # Add to PATH (add to ~/.zshrc or ~/.bash_profile)
-echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
+echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 
 # Verify installation
@@ -343,9 +343,10 @@ wsl --install -d Ubuntu-22.04
 ```
 
 **Step 3: Follow Ubuntu instructions above**
-- Once inside WSL, follow the Ubuntu/Debian installation steps
-- All commands will work natively in WSL environment
+- Once inside WSL, follow the Ubuntu/Debian installation steps
+- All commands will work natively in WSL environment
 
+</details>
 
 ### Installation & Setup
 
@@ -396,17 +397,17 @@ curl http://localhost:8000/health
 
 # Inference request
 curl -X POST http://localhost:8000/predict \
-  -H "Content-Type: application/json" \
-  -d '{
-    "sensors": {
-      "xmeas_1": 0.25038,
-      "xmeas_2": 3674.0,
-      "xmeas_3": 4509.3,
-      "xmeas_4": 9.3477,
-      ...
-      "xmv_11": 17.373
-    }
-  }'
+-H "Content-Type: application/json" \
+-d '{
+"sensors": {
+"xmeas_1": 0.25038,
+"xmeas_2": 3674.0,
+"xmeas_3": 4509.3,
+"xmeas_4": 9.3477,
+...
+"xmv_11": 17.373
+}
+}'
 ```
 
 ---
@@ -417,8 +418,8 @@ curl -X POST http://localhost:8000/predict \
 - **Source**: [Kaggle - TEP CSV Dataset](https://www.kaggle.com/datasets/afrniomelo/tep-csv)
 - **Domain**: Chemical engineering benchmark for process control
 - **Features**: 52 process variables
-  - 41 measured variables (xmeas_1 to xmeas_41)
-  - 11 manipulated variables (xmv_1 to xmv_11)
+- 41 measured variables (xmeas_1 to xmeas_41)
+- 11 manipulated variables (xmv_1 to xmv_11)
 - **Target**: 21 classes (0 = Normal, 1-20 = Fault types)
 - **Temporal Resolution**: 3-minute sampling intervals
 - **Simulation Length**: 500 samples per run (~25 hours)
@@ -435,17 +436,17 @@ curl -X POST http://localhost:8000/predict \
 1. **Select Fault Scenario**: Choose from Fault 1-20 dropdown
 2. **Start Simulation**: Click "▶️ Start Simulation" button
 3. **Monitor Real-time**:
-   - Reactor synoptic with LED status indicators
-   - Time-series charts (Pressure, Temperature, Flow)
-   - Fault diagnosis timeline
+- Reactor synoptic with LED status indicators
+- Time-series charts (Pressure, Temperature, Flow)
+- Fault diagnosis timeline
 4. **Review Results**: Post-simulation report with detection/diagnosis delays
 
 ### Dashboard Features
-- 🎨 **Reactor Synoptic**: Visual schematic with color-coded alerts
-- 📈 **Time-series Charts**: Live updating Plotly visualizations
-- ⏱️ **Event Timeline**: Tracks when faults are detected and diagnosed
-- 📊 **Performance Metrics**: F1 scores and accuracy per fault type
-- 🔔 **Stabilization Period**: First 60 minutes hidden to allow system warm-up
+- 🎨 **Reactor Synoptic**: Visual schematic with color-coded alerts
+- 📈 **Time-series Charts**: Live updating Plotly visualizations
+- ⏱️ **Event Timeline**: Tracks when faults are detected and diagnosed
+- 📊 **Performance Metrics**: F1 scores and accuracy per fault type
+- 🔔 **Stabilization Period**: First 60 minutes hidden to allow system warm-up
 
 ---
 
@@ -461,17 +462,17 @@ DEFAULT_N_SIMULATIONS = None        # Full dataset (or limit for prototyping)
 
 # Model Hyperparameters
 DETECTOR_PARAMS = {
-    "n_estimators": 50,
-    "max_depth": 10,
-    "class_weight": "balanced",
-    "n_jobs": -1
+"n_estimators": 50,
+"max_depth": 10,
+"class_weight": "balanced",
+"n_jobs": -1
 }
 
 DIAGNOSTICIAN_PARAMS = {
-    "n_estimators": 100,
-    "max_depth": 20,
-    "class_weight": "balanced",
-    "n_jobs": -1
+"n_estimators": 100,
+"max_depth": 20,
+"class_weight": "balanced",
+"n_jobs": -1
 }
 ```
 
@@ -514,21 +515,21 @@ make force-deploy             # Force metrics recompute + Docker rebuild
 
 ### Medallion Architecture
 
-**Bronze Layer** (Raw Data)
-- Download from Kaggle
-- Store original CSV files
-- Validate data integrity
+**Bronze Layer** (Raw Data)
+- Download from Kaggle
+- Store original CSV files
+- Validate data integrity
 
-**Silver Layer** (Processed)
-- Convert CSV → Parquet (50% memory reduction)
-- Apply optimized dtypes (float64 → float32)
-- Temporal windowing (samples 140-639)
-- Merge normal + faulty datasets
+**Silver Layer** (Processed)
+- Convert CSV → Parquet (50% memory reduction)
+- Apply optimized dtypes (float64 → float32)
+- Temporal windowing (samples 140-639)
+- Merge normal + faulty datasets
 
-**Gold Layer** (Model-Ready)
-- Group-wise train/test split (by simulation run)
-- Feature/target separation
-- Archive final test set for evaluation
+**Gold Layer** (Model-Ready)
+- Group-wise train/test split (by simulation run)
+- Feature/target separation
+- Archive final test set for evaluation
 
 ### Pipeline Execution
 
@@ -551,9 +552,9 @@ The system tracks comprehensive metrics per fault:
 - **F1-Score**: Harmonic mean of precision and recall
 - **Global Accuracy**: Overall classification accuracy
 
-Metrics are saved in `models/metrics.json` and displayed in:
-- Terminal (formatted table via evaluator)
-- Dashboard (metadata panel)
+Metrics are saved in `models/metrics.json` and displayed in:
+- Terminal (formatted table via evaluator)
+- Dashboard (metadata panel)
 
 ---
 
@@ -561,21 +562,21 @@ Metrics are saved in `models/metrics.json` and displayed in:
 
 ### Services
 
-**API Service** (`Dockerfile.api`)
-- Base: Python 3.11-slim
-- Exposes: Port 8000
-- Health check: `GET /health`
-- Hot-reload: Enabled for development
+**API Service** (`Dockerfile.api`)
+- Base: Python 3.11-slim
+- Exposes: Port 8000
+- Health check: `GET /health`
+- Hot-reload: Enabled for development
 
-**Dashboard Service** (`Dockerfile.dashboard`)
-- Base: Python 3.11-slim
-- Exposes: Port 8501
-- Connects to: `http://api:8000`
-- Volume mounts for live code updates
+**Dashboard Service** (`Dockerfile.dashboard`)
+- Base: Python 3.11-slim
+- Exposes: Port 8501
+- Connects to: `http://api:8000`
+- Volume mounts for live code updates
 
 ### Network
-- Bridge network: `tep-network`
-- Service discovery via DNS
+- Bridge network: `tep-network`
+- Service discovery via DNS
 
 ### Environment Variables
 - `API_URL`: Backend endpoint (default: `http://api:8000`)
@@ -630,25 +631,25 @@ pytest tests/test_predictions.py
 ## 🚧 Future Enhancements
 
 ### Production
-- [ ] Database integration (PostgreSQL/TimescaleDB)
-- [ ] Model registry (MLflow/Weights & Biases)
-- [ ] A/B testing framework
-- [ ] Prometheus metrics + Grafana dashboards
-- [ ] API authentication & rate limiting
+- [ ] Database integration (PostgreSQL/TimescaleDB)
+- [ ] Model registry (MLflow/Weights & Biases)
+- [ ] A/B testing framework
+- [ ] Prometheus metrics + Grafana dashboards
+- [ ] API authentication & rate limiting
 
 ### Machine Learning
-- [ ] Feature engineering (rolling windows, lag features)
-- [ ] Hyperparameter tuning (Optuna/GridSearch)
-- [ ] Ensemble methods (XGBoost, LightGBM)
-- [ ] Online learning capabilities
-- [ ] SHAP values for explainability
+- [ ] Feature engineering (rolling windows, lag features)
+- [ ] Hyperparameter tuning (Optuna/GridSearch)
+- [ ] Ensemble methods (XGBoost, LightGBM)
+- [ ] Online learning capabilities
+- [ ] SHAP values for explainability
 
 ### DevOps
-- [ ] CI/CD pipeline (GitHub Actions)
-- [ ] Kubernetes deployment
-- [ ] Infrastructure as Code (Terraform)
-- [ ] Secrets management (Vault)
-- [ ] Load balancing (NGINX)
+- [ ] CI/CD pipeline (GitHub Actions)
+- [ ] Kubernetes deployment
+- [ ] Infrastructure as Code (Terraform)
+- [ ] Secrets management (Vault)
+- [ ] Load balancing (NGINX)
 
 ---
 
@@ -678,17 +679,17 @@ uvicorn==0.31.0         # ASGI server
 
 Contributions are welcome! Please follow these steps:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 Please ensure:
-- Code passes `make lint`
-- All tests pass
-- Documentation is updated
-- Commit messages are descriptive
+- Code passes `make lint`
+- All tests pass
+- Documentation is updated
+- Commit messages are descriptive
 
 ---
 
@@ -711,7 +712,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Si vous trouvez un bug ou si vous avez une demande de fonctionnalité, merci d'ouvrir une **[Issue](https://github.com/jubenkai73/tep-demo/issues)**.
 
-Pour les questions générales et l'entraide, rendez-vous plutôt dans l'onglet **[Discussions](https://github.com/jubenkai73/tep-demo/discussions)** !
+Pour les questions générales et l'entraide, rendez-vous plutôt dans l'onglet **[Discussions](https://github.com/jubenkai73/tep-demo/discussions)** !
 ---
 
 ## 🌟 Star History
