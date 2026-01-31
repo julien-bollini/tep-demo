@@ -66,3 +66,28 @@ jobs:
         file: ./Dockerfile.api
         push: false
         tags: tep-api:latest
+
+  fedora-install-test:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest # On lance un conteneur Fedora officiel
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies on Fedora
+      run: |
+        # Fedora utilise dnf au lieu de apt
+        dnf install -y python3-pip python3-devel gcc gcc-c++
+
+    - name: Install Project Requirements
+      run: |
+        python3 -m pip install --upgrade pip
+        # On installe tes dépendances (pandas, sklearn, etc.)
+        pip3 install -r requirements.txt
+
+    - name: Smoke Test
+      run: |
+        # Vérifie que les scripts de base peuvent être importés sans erreur
+        python3 -c "import src.config; print('Config loaded successfully')"
