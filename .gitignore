@@ -1,0 +1,43 @@
+# --- Environnement virtuel ---
+.venv/
+venv/
+env/
+bin/
+lib/
+include/
+pyvenv.cfg
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.mypy_cache/
+.ruff_cache/
+
+# --- Docker ---
+.docker/
+
+# --- Secrets ---
+.env
+*.log
+
+# --- System ---
+.DS_Store
+Thumbs.db
+
+# Data and Models
+data/raw/
+data/processed/
+data/models/*.pkl
+data/models/*.csv
+data/models/*.txt
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+models/*.joblib
+models/*.pkl
+data/
+
+# Data and Models
+backup/
+
+*.parquet
+models/*.joblib

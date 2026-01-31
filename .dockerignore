@@ -1,0 +1,8 @@
+data/
+__pycache__/
+*.pyc
+.venv/
+.git/
+.env
+models/*.joblib
+.pytest_cache/

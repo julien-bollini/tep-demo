@@ -1,0 +1,42 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: tep-api
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - ENV=development
+    volumes:
+      # Selective mounting for hot-reloading during development
+      - ./src:/app/src
+      - ./models:/app/models
+      - ./config:/app/config
+    networks:
+      - tep-network
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: tep-dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://api:8000
+      - PYTHONPATH=/app
+    volumes:
+      # Specific mount for UI development
+      - ./src/dashboard:/app/src/dashboard
+      - ./data:/app/data
+      - ./models:/app/models
+    depends_on:
+      - api
+    networks:
+      - tep-network
+
+networks:
+  tep-network:
+    driver: bridge

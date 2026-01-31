@@ -1,0 +1,26 @@
+# --- API & Web Server ---
+# Core infrastructure for the REST interface and Pydantic data validation.
+fastapi==0.115.0
+uvicorn==0.31.0
+pydantic==2.9.2
+requests==2.32.3
+
+# --- Data Processing & Machine Learning ---
+# Heavyweight libraries for ETL processes and model inference.
+# Note: Ensure pyarrow is present for high-performance parquet handling.
+pandas==2.2.3
+numpy==1.26.4
+scikit-learn==1.7.2
+joblib==1.4.2
+pyarrow==17.0.0
+kagglehub==0.3.3
+PyYAML==6.0.2
+
+# --- Data Visualization & Dashboard ---
+# Streamlit remains decoupled from API logic for modular UI deployment.
+streamlit==1.39.0
+plotly==5.24.1
+
+# --- Development Tools (Linting & Quality) ---
+# Enforced via pre-commit hooks or CI pipelines.
+ruff==0.6.9

@@ -1,0 +1,6 @@
+{
+  "workbench.editorAssociations": {
+    "*.sqlite": "default",
+    "file:/**/*.parquet": "jupyter-data-wrangler"
+  }
+}
