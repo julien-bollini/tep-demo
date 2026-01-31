@@ -346,6 +346,7 @@ wsl --install -d Ubuntu-22.04
 - Once inside WSL, follow the Ubuntu/Debian installation steps
 - All commands will work natively in WSL environment
 
+</details>
 
 ### Installation & Setup
 
