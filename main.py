@@ -7,11 +7,6 @@ from src.preprocessing.processor import DataProcessor
 from src.training.loader import DataLoader
 from src.training.trainer import ModelTrainer
 from src.evaluation.evaluator import ModelEvaluator
-from src.config import (
-    RAW_DATA_PATH,
-    RAW_PARQUET_DIR,
-    RAW_CSV_FILES
-)
 
 class MLPipeline:
     """Orchestrates the end-to-end Machine Learning pipeline.
@@ -52,7 +47,7 @@ class MLPipeline:
         self.downloader.download()
 
         # Step 2: Optimization - Parquet provides better compression and schema enforcement
-        print("\n▶ STEP 2: Convert CSV to Parquet (Memory-Efficient)")
+        print("\n▶ STEP 2: Convert CSV to Parquet")
         self.processor.convert_csv_to_parquet()
 
         # Step 3: Silver layer refinement (Applying business logic filters)

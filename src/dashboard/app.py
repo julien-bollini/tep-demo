@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import requests
 import json
 import os
-from src.config import MODEL_DIR
+from src.config import METRICS_PATH
 
 # --- 1. PAGE CONFIGURATION ---
 # Optimize layout for wide-screen monitoring dashboards
@@ -26,8 +26,6 @@ API_URL = get_api_url()
 TIME_STEP_MINUTES = 3
 INJECTION_TIME_MIN = 60
 PERSISTENCE_LIMIT = 2
-
-METRICS_PATH = MODEL_DIR / "metrics.json"
 
 def load_performance_metadata():
     """

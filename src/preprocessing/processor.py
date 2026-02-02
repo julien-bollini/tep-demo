@@ -1,6 +1,7 @@
 import pandas as pd
-import pyarrow as pa
+import pyarrow.csv as pv
 import pyarrow.parquet as pq
+import gc
 import os
 from pathlib import Path
 from typing import Final
@@ -56,9 +57,6 @@ class DataProcessor:
         Transmutes raw CSV artifacts into Parquet using PyArrow Engine.
         Direct PyArrow reading is much more memory-efficient than Pandas for large CSVs.
         """
-        import pyarrow.csv as pv
-        import pyarrow.parquet as pq
-        import gc
 
         RAW_PARQUET_DIR.mkdir(parents=True, exist_ok=True)
 

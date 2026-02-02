@@ -47,6 +47,8 @@ MERGED_FILE_PATH: Path = RAW_PARQUET_DIR / "TEP_Faulty_and_Normal_Merged.parquet
 SUBSETS_DIR: Path = PROCESSED_DATA_PATH / "subsets"
 FINAL_SPLIT_DIR: Path = PROCESSED_DATA_PATH / "final_split"
 FINAL_TEST_SET_PATH: Path = FINAL_SPLIT_DIR / "test_set_final.parquet"
+METRICS_NAME = "metrics.json"
+METRICS_PATH = MODEL_DIR / METRICS_NAME
 
 # =============================================================================
 # GLOBAL PIPELINE PARAMETERS
