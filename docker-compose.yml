@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile.api
     container_name: tep-pipeline
     volumes:
-      - ./app
+      - .:/app
       - ./data:/app/data
       - ./models:/app/models
       - ./config:/app/config
