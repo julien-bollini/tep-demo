@@ -53,7 +53,7 @@ up: ## [Daily Run] Launch production services (API & Dashboard)
 
 pipeline: ## [Manual] Force model retraining via Docker container
 	@echo "🧠 Triggering Model Retraining..."
-	$(DOCKER) run --rm pipeline
+	docker compose run --rm pipeline python main.py --force
 	@$(call notify,Pipeline Training)
 
 dev: ## Fast update: Rebuild and restart services (Hot-reload)
