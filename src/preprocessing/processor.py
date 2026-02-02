@@ -1,4 +1,6 @@
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 import os
 from pathlib import Path
 from typing import Final
@@ -49,35 +51,48 @@ class DataProcessor:
 
         return df_cropped
 
-    def convert_csv_to_parquet(self) -> None:
-        """Transmutes raw CSV artifacts into memory-efficient Parquet format.
-
-        Uses optimized dtypes to minimize RAM footprint during ingestion and
-        enforces idempotency by skipping existing artifacts.
+    def convert_csv_to_parquet(self, input_csv: str, output_parquet: str) -> None:
         """
-        RAW_PARQUET_DIR.mkdir(parents=True, exist_ok=True)
-        converted_count: int = 0
+        Converts large CSV files to Parquet format using a memory-efficient
+        chunking strategy. This prevents Out-Of-Memory (OOM) errors on
+        resource-constrained environments like GitHub Actions or 8GB laptops.
+        """
+        print(f"📦 Processing: {os.path.basename(input_csv)}")
 
-        for csv_name in RAW_CSV_FILES:
-            csv_path: Path = RAW_DATA_PATH / csv_name
-            parquet_path: Path = RAW_PARQUET_DIR / csv_name.replace(".csv", ".parquet")
+        # Define chunk size to maintain a low memory footprint (~500MB RAM)
+        chunk_size = 100000
 
-            if not csv_path.exists():
-                print(f"⚠️ Source artifact missing: {csv_name}")
-                continue
+        # Initialize the CSV stream iterator
+        reader = pd.read_csv(input_csv, chunksize=chunk_size)
 
-            if parquet_path.exists() and not self.force_mode:
-                print(f"⏩ Skipping (already optimized): {parquet_path.name}")
-                continue
+        writer = None
 
-            # Ingestion with schema enforcement
-            df: pd.DataFrame = pd.read_csv(csv_path, dtype=OPTIMIZED_DTYPES)
-            df.to_parquet(parquet_path, engine="pyarrow", index=False)
-            print(f"✅ Optimized: {csv_name} → {parquet_path.name}")
-            converted_count += 1
+        try:
+            for i, chunk in enumerate(reader):
+                # Convert Pandas DataFrame to PyArrow Table for high-performance I/O
+                table = pa.Table.from_pandas(chunk)
 
-        if converted_count == 0:
-            print("✅ Silver Layer is fully synchronized.")
+                # Initialize the ParquetWriter with the schema from the first chunk
+                if writer is None:
+                    writer = pq.ParquetWriter(output_parquet, table.schema, compression='snappy')
+
+                # Stream the chunk directly to the disk
+                writer.write_table(table)
+
+                # Logging progress for observability
+                if (i + 1) % 5 == 0:
+                    print(f"   Processed { (i + 1) * chunk_size } rows...")
+
+        except Exception as e:
+            print(f"❌ Error during streaming conversion: {e}")
+            raise
+
+        finally:
+            # Ensure the writer is properly closed to finalize the Parquet file metadata
+            if writer:
+                writer.close()
+
+        print(f"✅ Successfully persisted: {output_parquet}")
 
     def merge_faulty_and_normal_data(self) -> pd.DataFrame:
         """Consolidates discrete training sets into a unified Master Silver record.
