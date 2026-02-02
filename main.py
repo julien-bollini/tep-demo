@@ -7,6 +7,11 @@ from src.preprocessing.processor import DataProcessor
 from src.training.loader import DataLoader
 from src.training.trainer import ModelTrainer
 from src.evaluation.evaluator import ModelEvaluator
+from src.config import (
+    RAW_DATA_PATH,
+    RAW_PARQUET_DIR,
+    RAW_CSV_FILES
+)
 
 class MLPipeline:
     """Orchestrates the end-to-end Machine Learning pipeline.
@@ -29,7 +34,7 @@ class MLPipeline:
         if sys.platform == "darwin":
             os.system(f'say -v Samantha "{message}" &')
 
-    def preprocess(self) -> int:
+    def preprocess(self) -> None:
         """Executes the ETL (Extract, Transform, Load) phase.
 
         Handles raw data ingestion, conversion to high-performance formats (Parquet),
@@ -47,8 +52,23 @@ class MLPipeline:
         self.downloader.download()
 
         # Step 2: Optimization - Parquet provides better compression and schema enforcement
-        print("\n▶ STEP 2: Convert CSV to Parquet")
-        self.processor.convert_csv_to_parquet()
+        print("\n▶ STEP 2: Convert CSV to Parquet (Memory-Efficient)")
+
+        for file_name in RAW_CSV_FILES:
+            # On prépare les chemins complets
+            input_csv = RAW_DATA_PATH / file_name
+            output_parquet = RAW_PARQUET_DIR / file_name.replace(".csv", ".parquet")
+
+            # On vérifie si le fichier existe déjà pour gagner du temps
+            if output_parquet.exists() and not self.processor.force_mode:
+                print(f"⏩ Skipping: {file_name} (already exists)")
+                continue
+
+            # ON DONNE LES ARGUMENTS ICI :
+            self.processor.convert_csv_to_parquet(
+                input_csv=str(input_csv),
+                output_parquet=str(output_parquet)
+            )
 
         # Step 3: Silver layer refinement (Applying business logic filters)
         print("▶ STEP 3: Processing Silver Layer (Cropping Data Testing)")

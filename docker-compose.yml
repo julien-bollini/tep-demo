@@ -31,6 +31,7 @@ services:
       - API_URL=http://api:8000
       - PYTHONPATH=/app
     volumes:
+      - .:/app
       - ./src/dashboard:/app/src/dashboard
       - ./data:/app/data:ro
       - ./models:/app/models:ro
