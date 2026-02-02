@@ -1,29 +1,7 @@
 version: '3.8'
 
 services:
-  # --- STEP 1: DATA PIPELINE (Ingestion & Training) ---
-  # This service executes the ETL and training logic, then terminates upon completion.
-  # It shares the API Dockerfile as both require the same ML stack (pandas, sklearn, etc.)
-  pipeline:
-    build:
-      context: .
-      dockerfile: Dockerfile.api
-    container_name: tep-pipeline
-    mem_limit: 8g
-    memswap_limit: 12g
-    volumes:
-      - .:/app
-      - ./data:/app/data
-      - ./models:/app/models
-      - ./config:/app/config
-    environment:
-      - PYTHONPATH=/app
-      - FORCE_REPROCESS=${FORCE:-false}
-    networks:
-      - tep-network
-    command: python main.py
-
-  # --- STEP 2: INFERENCE API (FastAPI) ---
+  # --- STEP 1: INFERENCE API (FastAPI) ---
   api:
     build:
       context: .
@@ -38,14 +16,10 @@ services:
       - ./src:/app/src
       - ./models:/app/models:ro
       - ./config:/app/config:ro
-    depends_on:
-      pipeline:
-        condition: service_completed_successfully
     networks:
       - tep-network
 
-  # --- STEP 3: ANALYTICS DASHBOARD (Streamlit) ---
-  # Provides the UI for data visualization and real-time inference monitoring.
+  # --- STEP 2: ANALYTICS DASHBOARD (Streamlit) ---
   dashboard:
     build:
       context: .
@@ -57,16 +31,15 @@ services:
       - API_URL=http://api:8000
       - PYTHONPATH=/app
     volumes:
-      - .:/app
       - ./src/dashboard:/app/src/dashboard
       - ./data:/app/data:ro
       - ./models:/app/models:ro
+      - ./config:/app/config:ro
     depends_on:
       - api
     networks:
       - tep-network
 
-# --- NETWORK TOPOLOGY ---
 networks:
   tep-network:
     driver: bridge

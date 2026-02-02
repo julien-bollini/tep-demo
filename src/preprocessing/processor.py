@@ -50,34 +50,40 @@ class DataProcessor:
         return df_cropped
 
     def convert_csv_to_parquet(self) -> None:
-        """Transmutes raw CSV artifacts into memory-efficient Parquet format.
-
-        Uses optimized dtypes to minimize RAM footprint during ingestion and
-        enforces idempotency by skipping existing artifacts.
         """
+        Transmutes raw CSV artifacts into Parquet using PyArrow Engine.
+        Direct PyArrow reading is much more memory-efficient than Pandas for large CSVs.
+        """
+        import pyarrow.csv as pv
+        import pyarrow.parquet as pq
+        import gc
+
         RAW_PARQUET_DIR.mkdir(parents=True, exist_ok=True)
-        converted_count: int = 0
 
         for csv_name in RAW_CSV_FILES:
-            csv_path: Path = RAW_DATA_PATH / csv_name
-            parquet_path: Path = RAW_PARQUET_DIR / csv_name.replace(".csv", ".parquet")
-
-            if not csv_path.exists():
-                print(f"⚠️ Source artifact missing: {csv_name}")
-                continue
+            csv_path = RAW_DATA_PATH / csv_name
+            parquet_path = RAW_PARQUET_DIR / csv_name.replace(".csv", ".parquet")
 
             if parquet_path.exists() and not self.force_mode:
-                print(f"⏩ Skipping (already optimized): {parquet_path.name}")
+                print(f"⏩ Skipping: {parquet_path.name}")
                 continue
 
-            # Ingestion with schema enforcement
-            df: pd.DataFrame = pd.read_csv(csv_path, dtype=OPTIMIZED_DTYPES)
-            df.to_parquet(parquet_path, engine="pyarrow", index=False)
-            print(f"✅ Optimized: {csv_name} → {parquet_path.name}")
-            converted_count += 1
+            print(f"🚀 High-Speed Converting (PyArrow): {csv_name}...")
 
-        if converted_count == 0:
-            print("✅ Silver Layer is fully synchronized.")
+            # PyArrow lit le fichier en C++ sans l'overhead de Python/Pandas
+            # Il respecte automatiquement les types si possible ou les gère mieux
+            table = pv.read_csv(csv_path)
+
+            # Ecriture immédiate sur le disque
+            pq.write_table(table, parquet_path)
+
+            print(f"✅ Optimized: {parquet_path.name}")
+
+            # Nettoyage
+            del table
+            gc.collect()
+
+        print("✅ Silver Layer is fully synchronized.")
 
     def merge_faulty_and_normal_data(self) -> pd.DataFrame:
         """Consolidates discrete training sets into a unified Master Silver record.
