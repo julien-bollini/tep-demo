@@ -10,6 +10,7 @@ services:
       dockerfile: Dockerfile.api
     container_name: tep-pipeline
     volumes:
+      - ./app
       - ./data:/app/data
       - ./models:/app/models
       - ./config:/app/config
@@ -18,7 +19,7 @@ services:
       - FORCE_REPROCESS=${FORCE:-false}
     networks:
       - tep-network
-    command: python src/main.py --force
+    command: python main.py --force
 
   # --- STEP 2: INFERENCE API (FastAPI) ---
   api:
