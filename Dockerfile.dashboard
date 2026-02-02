@@ -1,26 +1,32 @@
-# Standardizing on 3.10-slim for production stability
-FROM python:3.10-slim
+# --- STAGE 1: BASE (Common Environment) ---
+# Aligned with API base to leverage shared layer caching
+FROM python:3.10-slim AS base
 
-# Prevent byte code generation and ensure real-time logging
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app
-
 WORKDIR /app
 
-# Leverage Docker layer caching for dependencies
+# Install system dependencies for Streamlit and scientific libraries
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Dependency management
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Selective copy to keep image footprint small
-COPY src/ ./src/
+# --- STAGE 2: PRODUCTION (Final Dashboard Image) ---
+FROM base AS production
+
+# Copy UI source code and configuration manifests
+COPY src/dashboard/ ./src/dashboard/
 COPY config/ ./config/
-COPY models/ ./models/
 
 EXPOSE 8501
 
-# Streamlit production execution flags
+# Streamlit-specific production configuration
 CMD ["streamlit", "run", "src/dashboard/app.py", \
      "--server.port=8501", \
      "--server.address=0.0.0.0", \
