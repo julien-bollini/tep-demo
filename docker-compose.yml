@@ -9,6 +9,8 @@ services:
       context: .
       dockerfile: Dockerfile.api
     container_name: tep-pipeline
+    mem_limit: 8g
+    memswap_limit: 12g
     volumes:
       - .:/app
       - ./data:/app/data
@@ -19,7 +21,7 @@ services:
       - FORCE_REPROCESS=${FORCE:-false}
     networks:
       - tep-network
-    command: python main.py --force
+    command: python main.py
 
   # --- STEP 2: INFERENCE API (FastAPI) ---
   api:
@@ -55,6 +57,7 @@ services:
       - API_URL=http://api:8000
       - PYTHONPATH=/app
     volumes:
+      - .:/app
       - ./src/dashboard:/app/src/dashboard
       - ./data:/app/data:ro
       - ./models:/app/models:ro

@@ -83,6 +83,12 @@ class MLPipeline:
         print("\n▶ STEP 1: Loading Data (with cache check)")
         df: pd.DataFrame = self.loader.load_data()
 
+        # FOR GITHUB ACTIONS / CI
+        if os.getenv('GITHUB_ACTIONS') == 'true' or os.getenv('CI_MODE') == 'true':
+            print("⚠️ CI DETECTED: Reducing dataset size for Smoke Test (100k samples)")
+            # On prend 100 000 lignes max pour tenir dans les 7Go de GitHub
+            df = df.sample(n=min(100000, len(df)), random_state=42)
+
         # Step 2: MLOps Guardrail - Splitting by 'Run' ID to ensure validation robustness
         print("▶ STEP 2: Splitting Data by Run (Avoid Leakage)")
         split_data: tuple[tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series]] = self.loader.split_by_run(df)

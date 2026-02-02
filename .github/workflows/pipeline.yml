@@ -2,7 +2,7 @@ name: TEP Dashboard CI/CD
 
 on:
   push:
-    branches: [ main, 'feat/**' ]
+    branches: [ main, 'feat/**', 'fix/**' ]
   pull_request:
     branches: [ main ]
 
@@ -27,8 +27,24 @@ jobs:
 
     - name: Lint with flake8
       run: |
+        # E9, F63, F7, F82 sont des erreurs de syntaxe fatales
         flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
 
-    - name: Test Docker Pipeline (The One-Click)
+    - name: Build and Run Docker Pipeline (Smoke Test)
       run: |
+        # On utilise make install qui build et lance le tout
         make install
+      env:
+        # Cette variable active la réduction de données dans ton main.py
+        CI_MODE: "true"
+        # On peut aussi désactiver le son pour éviter des logs inutiles sur Linux
+        TERM: xterm
+
+    - name: Check Artifacts
+      run: |
+        # Vérifie que les modèles ont bien été générés malgré le format réduit
+        ls -lh models/
+
+    - name: Cleanup
+      if: always()
+      run: make down
